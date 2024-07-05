@@ -1,0 +1,38 @@
+{% extends '../partials/base.html' %}
+{% load static %}
+{% block extra_styles %}
+    <link rel="stylesheet" href="{% static 'assets/css/login.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.2/css/bootstrap.min.css">
+    <style>
+        form .action-button {
+            width: 100px;
+            background: #27AE60;
+            font-weight: bold;
+            color: white;
+            border: 0 none;
+            border-radius: 1px;
+            cursor: pointer;
+            padding: 10px;
+            margin: 10px 5px;
+          text-decoration: none;
+          font-size: 14px;
+        }
+    </style>
+{% endblock %}
+{% block main %}
+<div class="login-box">
+    <h2>Mashauri Login</h2>
+    <form action="{% url 'login' %}" method="POST">
+        {% csrf_token %}
+      <div class="user-box">
+        <input type="text" name="username" required="">
+        <label>Username</label>
+      </div>
+      <div class="user-box">
+        <input type="password" name="password" required="">
+        <label>Password</label>
+      </div>
+     <input type="submit" value="Login" class="action-button">
+    </form>
+  </div>
+{% endblock %}

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Dispatch</title>
+    </head>
+
+    <body>
+        <h1>Dispatch</h1>
+        <form action method="post">
+            {% csrf_token %}
+            <div class="input-element">
+                <label for="building_name">Building Name</label>
+                <input type="text" name="building_name" id="building_name">
+            </div>
+
+            <div class="input-element">
+                <label for="building_id">BuildingID</label>
+                <input type="text" name="building_id" id="building_id">
+            </div>
+
+            <div class="input-element">
+                <label for="msp">MSP</label>
+                <select id="msp" name="msp">
+                    {% for msp_value, msp_label in msp_choices %}
+                    <option value="{{ msp_value }}">{{ msp_label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="input-element">
+                <label for="fdp">FDP</label>
+                <select id="fdp" name="fdp">
+                    {% for fdp_value, fdp_label in fdp_choices %}
+                    <option value="{{ fdp_value }}">{{ fdp_label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="input-element">
+                <label for="escalation_type">Escalation Type</label>
+                <select id="escalation_type" name="escalation_type">
+                    {% for esc_value, esc_label in escalation_choices %}
+                    <option value="{{ esc_value }}">{{ esc_label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="input-element">
+                <label for="comments">Comments</label>
+                <input type="text" name="comments" id="comments">
+            </div>
+
+            <div class="input-element">
+                <label for="coordinates">Coordinates</label>
+                <input type="text" name="coordinates" id="coordinates">
+            </div>
+
+            <div class="input-element">
+                <label for="client_id">ClientID</label>
+                <input type="text" name="client_id" id="client_id">
+            </div>
+
+            <div class="input-element">
+                <label for="client_name">Client Name</label>
+                <input type="text" name="client_name" id="client_name">
+            </div>
+
+            <div class="input-element">
+                <label for="sla_timer">SLA Timer (in HH:MM:SS format)</label>
+                <input type="text" name="sla_timer" id="sla_timer">
+            </div>
+            <input type="submit" value="Dispatch Building">
+        </form>
+    </body>
+
+</html>
