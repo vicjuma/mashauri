@@ -1,46 +1,27 @@
 <!-- ========================= Main ==================== -->
  {% load static %}
 <div class="main">
-    <div class="topbar">
-        <div class="search">
-            <label>
-                <input type="text" placeholder="Search here">
-                <ion-icon name="search-outline"></ion-icon>
-            </label>
-        </div>
-
-        <div class="user">
-            <img src="{% static 'assets/imgs/customer01.jpg' %}" alt="">
-        </div>
-    </div>
-
+    {% include '../partials/nav.html' %}
     <!-- ======================= Cards ================== -->
     <div class="cardBox">
         <div class="card">
             <div>
-                <div class="cardName">Unclaimed Dispatches</div>
-                <div class="numbers">1,504</div>
+                <div class="cardName">All Escalations</div>
+                <div class="numbers"> {{ total_dispatches_all  }}</div>
             </div>
         </div>
 
         <div class="card">
             <div>
-                <div class="cardName">My Dispatches</div>
-                <div class="numbers">80</div>
+                <div class="cardName">My Escalations</div>
+                <div class="numbers">{{ total_dispatches }}</div>
             </div>
         </div>
 
         <div class="card">
             <div>
-                <div class="cardName">All Dispatches</div>
-                <div class="numbers">284</div>
-            </div>
-        </div>
-
-        <div class="card">
-            <div>
-                <div class="cardName">Breached SLA</div>
-                <div class="numbers">0%</div>
+                <div class="cardName">SLA Breach</div>
+                <div class="numbers">{{ breached }}</div>
             </div>
         </div>
     </div>
@@ -50,7 +31,7 @@
         <div class="recentOrders">
             <div class="cardHeader">
                 <h2>Unclaimed Dispatches</h2>
-                <a href="#" class="btn">View All</a>
+                <a href="{% url 'dispatch' %}" class="btn">Dispatch</a>
             </div>
 
             <table>
@@ -63,6 +44,7 @@
                         <td>MSP</td>
                         <td>FDP</td>
                         <td>SLA</td>
+                        <td>Time Remaining</td>
                         <td>Status</td>
                         <td>Details</td>
                     </tr>
@@ -78,8 +60,9 @@
                         <td>{{ dispatch.msp }}</td>
                         <td>{{ dispatch.fdp }}</td>
                         <td>{{ dispatch.sla_timer }}</td>
-                        <td><span class="status delivered">Delivered</span></td>
-                        <td>Details</td>
+                        <td>{{ dispatch.time_remaining_display }}</td>
+                        <td><span class="status {{dispatch.status}}">{{ dispatch.status }}</span></td>
+                        <td> <a href="{% url 'dispatch-detail' dispatch.pk %}" style="text-decoration: none; color: cyan"> Details </a> </td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -88,3 +71,7 @@
     </div>
 </div>
 </div>
+<a href="{% url 'presentation' %}">Presentation</a>
+{% block extra_scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+{% endblock %}

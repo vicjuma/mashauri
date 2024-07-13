@@ -10,7 +10,7 @@
 }
 
 :root {
-  --blue: #2a2185;
+  --blue: #46BD61;
   --white: #fff;
   --gray: #f5f5f5;
   --black1: #222;
@@ -37,6 +37,7 @@ body {
   transition: 0.5s;
   overflow: hidden;
 }
+
 .navigation.active {
   width: 80px;
 }
@@ -74,6 +75,7 @@ body {
   text-decoration: none;
   color: var(--white);
 }
+
 .navigation ul li:hover a,
 .navigation ul li.hovered a {
   color: var(--blue);
@@ -87,6 +89,7 @@ body {
   line-height: 75px;
   text-align: center;
 }
+
 .navigation ul li a .icon ion-icon {
   font-size: 1.75rem;
 }
@@ -115,6 +118,7 @@ body {
   box-shadow: 35px 35px 0 10px var(--white);
   pointer-events: none;
 }
+
 .navigation ul li:hover a::after,
 .navigation ul li.hovered a::after {
   content: "";
@@ -138,6 +142,7 @@ body {
   background: var(--white);
   transition: 0.5s;
 }
+
 .main.active {
   width: calc(100% - 80px);
   left: 80px;
@@ -192,24 +197,6 @@ body {
   font-size: 1.2rem;
 }
 
-.user {
-  position: relative;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  overflow: hidden;
-  cursor: pointer;
-}
-
-.user img {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
 /* ======================= Cards ====================== */
 .cardBox {
   position: relative;
@@ -228,7 +215,7 @@ body {
   display: flex;
   justify-content: space-between;
   cursor: pointer;
-  box-shadow: 0 7px 25px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 5px 5px #46BD61;
 }
 
 .cardBox .card .numbers {
@@ -253,6 +240,7 @@ body {
 .cardBox .card:hover {
   background: var(--blue);
 }
+
 .cardBox .card:hover .numbers,
 .cardBox .card:hover .cardName,
 .cardBox .card:hover .iconBx {
@@ -274,7 +262,7 @@ body {
   /* min-height: 500px; */
   background: var(--white);
   padding: 20px;
-  box-shadow: 0 7px 25px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 5px 5px #46BD61;
   border-radius: 20px;
 }
 
@@ -283,10 +271,12 @@ body {
   justify-content: space-between;
   align-items: flex-start;
 }
+
 .cardHeader h2 {
   font-weight: 600;
   color: var(--blue);
 }
+
 .cardHeader .btn {
   position: relative;
   padding: 5px 10px;
@@ -301,33 +291,44 @@ body {
   border-collapse: collapse;
   margin-top: 10px;
 }
+
 .details table thead td {
   font-weight: 600;
 }
-.details .recentOrders table tr {
+
+.details .recentOrders table tr,
+.details .recentOrders table tr a {
   color: var(--black1);
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
+
 .details .recentOrders table tr:last-child {
   border-bottom: none;
 }
-.details .recentOrders table tbody tr:hover {
+
+.details .recentOrders table tbody tr:hover,
+.details .recentOrders table tr a:hover {
   background: var(--blue);
   color: var(--white);
 }
+
 .details .recentOrders table tr td {
   padding: 10px;
 }
+
 .details .recentOrders table tr td:last-child {
   text-align: end;
 }
+
 .details .recentOrders table tr td:nth-child(2) {
   text-align: end;
 }
+
 .details .recentOrders table tr td:nth-child(3) {
   text-align: center;
 }
-.status.delivered {
+
+.status.Closed {
   padding: 2px 4px;
   background: #8de02c;
   color: var(--white);
@@ -335,6 +336,7 @@ body {
   font-size: 14px;
   font-weight: 500;
 }
+
 .status.pending {
   padding: 2px 4px;
   background: #e9b10a;
@@ -343,7 +345,8 @@ body {
   font-size: 14px;
   font-weight: 500;
 }
-.status.return {
+
+.status.Hold {
   padding: 2px 4px;
   background: #f00;
   color: var(--white);
@@ -351,7 +354,8 @@ body {
   font-size: 14px;
   font-weight: 500;
 }
-.status.inProgress {
+
+.status.Progress {
   padding: 2px 4px;
   background: #1795ce;
   color: var(--white);
@@ -369,6 +373,7 @@ body {
   box-shadow: 0 7px 25px rgba(0, 0, 0, 0.08);
   border-radius: 20px;
 }
+
 .recentCustomers .imgBx {
   position: relative;
   width: 40px;
@@ -376,6 +381,7 @@ body {
   border-radius: 50px;
   overflow: hidden;
 }
+
 .recentCustomers .imgBx img {
   position: absolute;
   top: 0;
@@ -384,22 +390,27 @@ body {
   height: 100%;
   object-fit: cover;
 }
+
 .recentCustomers table tr td {
   padding: 12px 10px;
 }
+
 .recentCustomers table tr td h4 {
   font-size: 16px;
   font-weight: 500;
   line-height: 1.2rem;
 }
+
 .recentCustomers table tr td h4 span {
   font-size: 14px;
   color: var(--black2);
 }
+
 .recentCustomers table tr:hover {
   background: var(--blue);
   color: var(--white);
 }
+
 .recentCustomers table tr:hover td h4 span {
   color: var(--white);
 }
@@ -409,17 +420,21 @@ body {
   .navigation {
     left: -300px;
   }
+
   .navigation.active {
     width: 300px;
     left: 0;
   }
+
   .main {
     width: 100%;
     left: 0;
   }
+
   .main.active {
     left: 300px;
   }
+
   .cardBox {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -429,9 +444,11 @@ body {
   .details {
     grid-template-columns: 1fr;
   }
+
   .recentOrders {
     overflow-x: auto;
   }
+
   .status.inProgress {
     white-space: nowrap;
   }
@@ -441,28 +458,208 @@ body {
   .cardBox {
     grid-template-columns: repeat(1, 1fr);
   }
+
   .cardHeader h2 {
     font-size: 20px;
   }
+
   .user {
     min-width: 40px;
   }
+
   .navigation {
     width: 100%;
     left: -100%;
     z-index: 1000;
   }
+
   .navigation.active {
     width: 100%;
     left: 0;
   }
+
   .toggle {
     z-index: 10001;
   }
+
   .main.active .toggle {
     color: #fff;
     position: fixed;
     right: 0;
     left: initial;
   }
+}
+
+* **************************************************** CONTENEDOR ******************************************************/ .container {
+  background: url("https://subtlepatterns.com/patterns/ricepaper.png");
+  min-height: 100%;
+  overflow: auto;
+}
+
+/* ENLACES */
+a {
+  color: #fff;
+  cursor: pointer;
+  display: block;
+  padding: 1rem 1.5rem;
+  text-decoration: none;
+  transition: background-color .16s ease-in;
+}
+
+a:hover {
+  background-color: rgba(70, 189, 97, .5);
+  ;
+}
+
+/* **************************************************
+        BARRA DE NAVEGACION Y MENU NORMAL
+****************************************************/
+/* Barra de navegacion (contiene al nav mini menu) */
+.navbar-menu {
+  background-color: #46BD61;
+  margin: 2% auto;
+  max-width: 1000px;
+  width: calc(100%);
+}
+
+/* Menu */
+.navbar-menu .menu {
+  display: block;
+  text-align: center;
+}
+
+/* List items*/
+.navbar-menu .menu li {
+  display: inline-block;
+}
+
+/* Cuando se haga hover sobre el item el submenu se activa
+ en caso tuviese */
+.navbar-menu .menu li:hover>.submenu {
+  display: block;
+  -webkit-animation-name: showSubMenu;
+  -webkit-animation-duration: .4s;
+}
+
+/* Submenus*/
+.navbar-menu .menu li ul {
+  background-color: #46BD61;
+  display: none;
+  position: absolute;
+}
+
+/* List items de submenus */
+.navbar-menu .menu li ul li {
+  display: block;
+}
+
+.navbar-menu .menu li ul li a:active {
+  -webkit-animation-name: hideSubMenu;
+  -webkit-animation-duration: .4s;
+}
+
+/******************************************************
+                        MINI MENU
+******************************************************/
+/* Mini menu */
+.navbar-mini-menu {
+  background-color: #46BD61;
+  display: none;
+}
+
+/* Bloque que tiene el boton para desplegar el mini menu */
+.navbar-mini-menu .menu-select {
+  color: #fff;
+  padding: 1rem 1.5rem;
+}
+
+/* Span que contiene el icono*/
+.navbar-mini-menu .menu-select .btn-select {
+  background: url("https://imgur.com/VbcTojM.png") no-repeat;
+  cursor: pointer;
+  position: absolute;
+  height: 30px;
+  width: 30px;
+  right: 10px;
+  top: 10px;
+}
+
+/* Lista del mini menu */
+.navbar-mini-menu .mini-menu-options {
+  display: block;
+}
+
+/* Items del mini menu */
+.navbar-mini-menu .mini-menu-options li {
+  display: block;
+}
+
+/* Submenus de los items del mini menu */
+.navbar-mini-menu .mini-menu-options li .submenu {
+  display: none;
+}
+
+.navbar-mini-menu .mini-menu-options li:focus {
+  outline: 0;
+}
+
+.navbar-mini-menu .mini-menu-options li:focus>.submenu {
+  display: block;
+  -webkit-animation-name: showSubMenu;
+  -webkit-animation-duration: .4s;
+}
+
+/* Enlaces del mini menu */
+.navbar-mini-menu .mini-menu-options li a {
+  display: block;
+  padding: 1rem 1.5rem;
+}
+
+/* ***************************************************
+                      ANIMACIONES
+*****************************************************/
+@-webkit-keyframes showSubMenu {
+  0% {
+    transform: scale(0, 0);
+  }
+
+  100% {
+    transform: scale(1, 1);
+  }
+}
+
+@-webkit-keyframes hideSubMenu {
+  0% {
+    transform: scale(1, 1);
+  }
+
+  100% {
+    transform: scale(0, 0);
+  }
+}
+
+/*****************************************************                       MEDIAQUERIES
+*****************************************************/
+@media screen and (max-width: 750px) {
+
+  /* Elimina los margenes al nav */
+  .navbar-menu {
+    margin: 0;
+  }
+
+  /* Esconde el menu normal */
+  .navbar-menu .menu {
+    display: none;
+  }
+
+  /* Muestra el mini menu */
+  .navbar-mini-menu {
+    display: block;
+  }
+
+  /* Esconde la lista del mini menu */
+  .navbar-mini-menu .mini-menu-options {
+    display: none;
+  }
+
 }

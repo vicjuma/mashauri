@@ -65,12 +65,12 @@ WSGI_APPLICATION = 'fiberIS.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "OPTIONS": {
-            "read_default_file": os.path.join(BASE_DIR, 'mysql.cnf'),
-        },
+        
+        'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME':  BASE_DIR / 'db.sqlite3'
     }
+    
 }
 
 AUTHENTICATION_BACKENDS = [
@@ -98,6 +98,10 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 AUTH_USER_MODEL = "mashauri.User"
+
+LOGIN_URL = '/'
+ALLOWED_HOSTS = ['*']
+
 
 
 # Internationalization
@@ -130,6 +134,7 @@ STATICFILES_DIRS = [
 ]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
+MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 JAZZMIN_SETTINGS = {

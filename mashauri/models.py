@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, UserManager, PermissionsMixin
+from django.utils import timezone
+from datetime import timedelta
 
 class CustomUserManager(UserManager):
     def _create_user(self, username, password, **extra_fields):
@@ -30,6 +32,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         ENTERPRISE_CONNECTIVITY = "ENTERPRISE CONNECTIVITY", "ENTERPRISE CONNECTIVITY"
         ENTERPRISE_PROJECT = "ENTERPRISE_PROJECT", "ENTERPRISE_PROJECT"
         SUPPORT = "SUPPORT", "SUPPORT"
+        ROLLOUT_PARTNER = "ROLLOUT_PARTNER", "ROLLOUT_PARTNER"
     class MSP(models.TextChoices):
         No_msp = "None", "None"
         Egypro = "Egypro", "Egypro"
@@ -60,6 +63,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     role = models.CharField(max_length=50, choices=Role.choices)
     msp_category = models.CharField(max_length=50, choices=MSP.choices, default=MSP.No_msp, blank=False, null=True)
     fdp_category = models.CharField(max_length=50, choices=FDP.choices, default=FDP.No_fdp, blank=False, null=True)
+    rp_category = models.CharField(max_length=50, choices=FDP.choices, default=FDP.No_fdp, blank=False, null=True)
     
     objects = CustomUserManager()
     USERNAME_FIELD = 'username'
@@ -83,6 +87,7 @@ class Dispatch(models.Model):
         ('Reactive', 'Reactive'),
         ('OTB', 'OTB'),
         ('Support', 'Support'),
+        ('Optimization', 'Optimization'),
     ]
     
     MSP_CHOICES = [
@@ -101,11 +106,19 @@ class Dispatch(models.Model):
         ('BTN', 'BTN'),
         ('Com21', 'Com21'),
     ]
+    
+    STATUS_CHOICES = [
+        ('Hold', 'Hold'),
+        ('Progress', 'Progress'),
+        ('Closed', 'Closed'),
+    ]
 
     building_name = models.CharField(max_length=50)
     building_id = models.CharField(max_length=50, null=True, blank=True)
     msp = models.CharField(max_length=50, choices=MSP_CHOICES)
     fdp = models.CharField(max_length=50, choices=FDP_CHOICES)
+    rp = models.CharField(max_length=50, choices=FDP_CHOICES)
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='Progress')
     escalation_type = models.CharField(max_length=50, choices=ESCALATION_CHOICES)
     comments = models.TextField(null=True, blank=True)
     coordinates = models.CharField(max_length=50, null=True, blank=True, help_text='Latitude and Longitude tuple as "latitude,longitude"')
@@ -113,11 +126,17 @@ class Dispatch(models.Model):
     client_name = models.CharField(max_length=50, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    sla_timer = models.DurationField(null=True, blank=True)
+    sla_timer = models.DateTimeField(null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    dispatch_image = models.ImageField(null=True, blank=True, upload_to='images/')
 
     def __str__(self):
         return f'Dispatch for {self.building_name} (ID: {self.building_id})'
+    
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.sla_timer = timezone.now() + timedelta(hours=24)
+        super(Dispatch, self).save(*args, **kwargs)
     
     class Meta:
         db_table = 'mashauri_dispatches'
