@@ -1,94 +1,89 @@
-/* ---- particles.js config ---- */
+$(document).ready(function () {
+    console.log("Document ready");
 
-particlesJS("particles-js", {
-    "particles": {
-      "number": {
-        "value": 60,
-        "density": {
-          "enable": true,
-          "value_area": 1000
-        }
-      },
-      "color": {
-        "value":  ["#344455", "#ffffff"]
-      },
-      "shape": {
-        "type": "edge",
-        "stroke": {
-          "width": 0,
-          "color": "#000000"
+    // Ensure no previous event listeners are attached to the form submission
+    $('#login_form').off('success.form.bv').on('success.form.bv', function (e) {
+
+        // Prevent form submission
+        e.preventDefault();
+
+        // Disable the submit button to prevent multiple submissions
+        $('#submit_button').prop('disabled', true);
+
+        // Get the form instance
+        var $form = $(e.target);
+
+        // Use Ajax to submit form data
+        var formData = new FormData($form[0]);
+
+        $.ajax({
+            url: $form.attr('action'),
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (result) {
+                $('#error_message').hide();
+                $('#success_message').slideDown({ opacity: "show" }, "slow");
+                $('#login_form').data('bootstrapValidator').resetForm();
+                console.log("Form submitted successfully", result);
+                setTimeout(() => {
+                    $('#success_message').text('Form submitted successfully!').show();
+                    $('#submit_button').prop('disabled', false); // Re-enable the button if needed
+                }, 3000)
+                setTimeout(() => {
+                    if (result.role === "ENTERPRISE CONNECTIVITY") {
+                        window.location.href = '/dashboard/ec';
+
+                    } else if (result.role === "FDP") {
+                        window.location.href = '/dashboard/fdp';
+                    } else if (result.role === "MSP") {
+                        window.location.href = '/dashboard/msp';
+                    } else if (result.role === "ENTERPRISE_PROJECT") {
+                        window.location.href = '/dashboard/ep';
+                    } else if (result.role === "SUPPORT") {
+                        window.location.href = '/dashboard/support';
+                    } else if (result.role === "ROLLOUT_PARTNER") {
+                        window.location.href = '/dashboard/rp';
+                    }
+                    console.log(result.role);
+                }, 3000)
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                $('#error_message').slideDown({ opacity: "show" }, "slow");
+                $('#submit_button').prop('disabled', false); // Re-enable the button if needed
+            }
+        });
+    });
+
+    // BootstrapValidator initialization
+    $('#login_form').bootstrapValidator({
+        feedbackIcons: {
+            valid: 'glyphicon glyphicon-ok',
+            invalid: 'glyphicon glyphicon-remove',
+            validating: 'glyphicon glyphicon-refresh'
         },
-        "polygon": {
-          "nb_sides": 5
-        },
-        "image": {
-          "src": "img/github.svg",
-          "width": 100,
-          "height": 100
+        fields: {
+            username: {
+                validators: {
+                    notEmpty: {
+                        message: 'Please supply the username'
+                    }
+                }
+            },
+            password: {
+                validators: {
+                    notEmpty: {
+                        message: 'Please supply the password'
+                    }
+                }
+            },
+
         }
-      },
-      "opacity": {
-        "value": 0.5,
-        "random": false,
-        "anim": {
-          "enable": false,
-          "speed": 1,
-          "opacity_min": 0.1,
-          "sync": false
-        }
-      },
-      "size": {
-        "value": 4,
-        "random": true,
-        "anim": {
-          "enable": false,
-          "speed": 40,
-          "size_min": 0.1,
-          "sync": false
-        }
-      },
-      "line_linked": {
-        "enable": true,
-        "distance": 50,
-        "color": "#fff",
-        "opacity": 0.5,
-        "width": 1
-      },
-      "move": {
-        "enable": true,
-        "speed": 3,
-        "direction": "none",
-        "random": false,
-        "straight": false,
-        "out_mode": "out",
-        "bounce": false,
-        "attract": {
-          "enable": false,
-          "rotateX": 600,
-          "rotateY": 1200
-        }
-      }
-    },
-    "retina_detect": true
-  });
-  
-  
-  /* ---- stats.js config ---- */
-  
-  var count_particles, stats, update;
-  stats = new Stats;
-  stats.setMode(0);
-  stats.domElement.style.position = 'absolute';
-  stats.domElement.style.left = '0px';
-  stats.domElement.style.top = '0px';
-  document.body.appendChild(stats.domElement);
-  count_particles = document.querySelector('.js-count-particles');
-  update = function() {
-    stats.begin();
-    stats.end();
-    if (window.pJSDom[0].pJS.particles && window.pJSDom[0].pJS.particles.array) {
-      count_particles.innerText = window.pJSDom[0].pJS.particles.array.length;
-    }
-    requestAnimationFrame(update);
-  };
-  requestAnimationFrame(update);
+    });
+
+    // Ensure the form is not submitted traditionally
+    $('#login_form').on('submit', function (e) {
+        e.preventDefault();
+    });
+});

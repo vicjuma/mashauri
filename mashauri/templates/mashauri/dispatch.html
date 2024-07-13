@@ -1,79 +1,172 @@
-<!DOCTYPE html>
-<html lang="en">
-
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Dispatch</title>
-    </head>
-
-    <body>
-        <h1>Dispatch</h1>
-        <form action method="post">
-            {% csrf_token %}
-            <div class="input-element">
-                <label for="building_name">Building Name</label>
-                <input type="text" name="building_name" id="building_name">
+{% extends '../partials/base.html' %}
+{% load static %}
+{% block extra_styles %}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.bootstrapvalidator/0.5.0/css/bootstrapValidator.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.3/css/font-awesome.css">
+<link rel="stylesheet" href="{% static 'assets/css/menu.css' %}">
+<style>
+    #success_message{ display: none;}
+</style>
+{% endblock %}
+{% block main %}
+    <div class="container">
+        {% include '../partials/nav.html' %}
+        <form class="well form-horizontal" action=" " method="post"  id="contact_form" style="border-radius:10px; margin-top: 5rem; box-shadow: 0 15px 25px rgba(0,0,0,.6);">
+            <fieldset>
+            <!-- Form Name -->
+            <legend style="margin: 0 auto; text-align: center; margin-bottom: 2rem;">Dispatch Your Building!</legend>
+            <!-- Text input-->
+            <div class="form-group">
+            <label class="col-md-4 control-label">Building Name</label>
+            <div class="col-md-4 inputGroupContainer">
+            <div class="input-group">
+            <span class="input-group-addon"><i class="glyphicon glyphicon-home"></i></span>
+            <input  name="building_name" placeholder="Building Name" class="form-control"  type="text">
+                </div>
             </div>
-
-            <div class="input-element">
-                <label for="building_id">BuildingID</label>
-                <input type="text" name="building_id" id="building_id">
             </div>
-
-            <div class="input-element">
-                <label for="msp">MSP</label>
-                <select id="msp" name="msp">
+            <!-- Text input-->
+            
+            <div class="form-group">
+            <label class="col-md-4 control-label" >Building ID</label> 
+                <div class="col-md-4 inputGroupContainer">
+                <div class="input-group">
+            <span class="input-group-addon"><i class="glyphicon glyphicon-home"></i></span>
+            <input name="building_id" placeholder="Building ID" class="form-control"  type="text">
+                </div>
+            </div>
+            </div>
+            
+            <!-- Text input-->
+                <div class="form-group">
+            <label class="col-md-4 control-label">Coordinates</label>  
+                <div class="col-md-4 inputGroupContainer">
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-globe"></i></span>
+            <input name="coordinates" placeholder="Coordinates" class="form-control"  type="text">
+                </div>
+            </div>
+            </div>
+            
+            
+            <!-- Text input-->
+                
+            <div class="form-group"> 
+                <label class="col-md-4 control-label">MSP</label>
+                    <div class="col-md-4 selectContainer">
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
+                    <select name="msp" class="form-control selectpicker" >
+                    <option value=" " >Please select an MSP</option>
                     {% for msp_value, msp_label in msp_choices %}
                     <option value="{{ msp_value }}">{{ msp_label }}</option>
                     {% endfor %}
-                </select>
-            </div>
+                    </select>
+                </div>
+                </div>
+                </div>
 
-            <div class="input-element">
-                <label for="fdp">FDP</label>
-                <select id="fdp" name="fdp">
-                    {% for fdp_value, fdp_label in fdp_choices %}
-                    <option value="{{ fdp_value }}">{{ fdp_label }}</option>
-                    {% endfor %}
-                </select>
+                <div class="form-group"> 
+                    <label class="col-md-4 control-label">FDP</label>
+                        <div class="col-md-4 selectContainer">
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
+                        <select name="fdp" class="form-control selectpicker" >
+                        <option value=" " >Please select an FDP</option>
+                        {% for fdp_value, fdp_label in fdp_choices %}
+                        <option value="{{ fdp_value }}">{{ fdp_label }}</option>
+                        {% endfor %}
+                        </select>
+                    </div>
+                    </div>
+                    </div>
+                
+                    <div class="form-group"> 
+                        <label class="col-md-4 control-label">Escalation Type</label>
+                            <div class="col-md-4 selectContainer">
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="glyphicon glyphicon-list"></i></span>
+                            <select name="escalation_type" class="form-control selectpicker" >
+                            <option value=" " >Please select an Escalation Type</option>
+                            {% for esc_value, esc_label in escalation_choices %}
+                                <option value="{{ esc_value }}">{{ esc_label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        </div>
+                        </div>
+            
+            <!-- Text input-->
+                
+            <div class="form-group">
+            <label class="col-md-4 control-label">Client Name</label>  
+                <div class="col-md-4 inputGroupContainer">
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+            <input name="client_name" placeholder="Client Name" class="form-control" type="text">
+                </div>
             </div>
-
-            <div class="input-element">
-                <label for="escalation_type">Escalation Type</label>
-                <select id="escalation_type" name="escalation_type">
-                    {% for esc_value, esc_label in escalation_choices %}
-                    <option value="{{ esc_value }}">{{ esc_label }}</option>
-                    {% endfor %}
-                </select>
             </div>
-
-            <div class="input-element">
-                <label for="comments">Comments</label>
-                <input type="text" name="comments" id="comments">
+            
+            <!-- Text input-->
+            
+            <div class="form-group">
+            <label class="col-md-4 control-label">Client ID</label>  
+                <div class="col-md-4 inputGroupContainer">
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+            <input name="client_id" placeholder="Client ID" class="form-control"  type="text">
+                </div>
             </div>
-
-            <div class="input-element">
-                <label for="coordinates">Coordinates</label>
-                <input type="text" name="coordinates" id="coordinates">
             </div>
-
-            <div class="input-element">
-                <label for="client_id">ClientID</label>
-                <input type="text" name="client_id" id="client_id">
+            
+            <!-- Text input-->
+            
+            <div class="form-group">
+            <label class="col-md-4 control-label">Dispatch Image</label>  
+                <div class="col-md-4 inputGroupContainer">
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-cloud-upload"></i></span>
+            <input name="dispatch_image" placeholder="Dispatch Image" class="form-control"  type="file" accept="image/*">
+                </div>
             </div>
-
-            <div class="input-element">
-                <label for="client_name">Client Name</label>
-                <input type="text" name="client_name" id="client_name">
             </div>
-
-            <div class="input-element">
-                <label for="sla_timer">SLA Timer (in HH:MM:SS format)</label>
-                <input type="text" name="sla_timer" id="sla_timer">
+            
+            <div class="form-group">
+            <label class="col-md-4 control-label">Comments</label>
+                <div class="col-md-4 inputGroupContainer">
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-pencil"></i></span>
+                        <textarea class="form-control" name="comments" placeholder="Comments"></textarea>
             </div>
-            <input type="submit" value="Dispatch Building">
-        </form>
-    </body>
-
-</html>
+            </div>
+            </div>
+            
+            <!-- Success message -->
+            <div class="alert alert-success" role="alert" id="success_message">Success <i class="glyphicon glyphicon-thumbs-up"></i> Thanks for contacting us, we will get back to you shortly.</div>
+            
+            <!-- Button -->
+            <div class="form-group">
+            <label class="col-md-4 control-label"></label>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-info" >Send <span class="glyphicon glyphicon-send"></span></button>
+            </div>
+            </div>
+            
+            </fieldset>
+    </form>
+    </div>
+        </div><!-- /.container -->
+    {% block extra_scripts %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-validator/0.5.3/js/bootstrapValidator.js" type="text/javascript"></script>
+    <script>
+        window.csrfToken = '{{ csrf_token }}';
+    </script>
+    <script src="{% static 'assets/js/dispatch.js' %}"></script>
+    <script src="{% static 'assets/js/menu.js' %}"></script>
+    {% endblock %}
+{% endblock %}
