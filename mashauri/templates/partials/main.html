@@ -1,5 +1,67 @@
 <!-- ========================= Main ==================== -->
  {% load static %}
+ {% block extra_styles %}
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-icons/3.0.1/iconfont/material-icons.min.css">
+<style>
+    .custom-select {
+        display: inline-block;
+        background: #46BD61;
+        border: 1px solid #fff;
+        color: #fff;
+        font-size: 12px;
+        position: relative;
+        padding: 1px;
+      }
+      
+      .custom-select:after {
+        border-left: 1px solid #fff;
+        content: '▼';
+        display: block;
+        width: 1.5em;
+        height: 100%;
+        position: absolute;
+        right: 0;
+        top: 0;
+        line-height: 5em;
+      }
+      
+      .custom-select select {
+        border: 0;
+        color: #fff;
+        background: transparent;
+        padding: 1em 5em 1em 1em;
+        letter-spacing: 1px;
+        font-family: 'Roboto', sans-serif;
+        font-size: 1.4em;
+        line-height: 1.2em;
+        cursor: pointer;
+        transition: .2s all;
+        border-radius: 0;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        -ms-appearance: none;
+        appearance: none;
+      }
+      
+      .custom select select::-ms-expand {
+        display: none;
+      }
+      
+      .custom-select select:hover,
+      .custom-select select:focus {
+        outline: 0;
+        background: #000;
+        background: rgba(0,0,0,.5);
+      }
+      
+      option {
+        color: #fff;
+        display: block;
+        background: #000;
+        line-height: 3.9em;
+      }
+</style>
+{% endblock %}
 <div class="main">
     {% include '../partials/nav.html' %}
     <!-- ======================= Cards ================== -->
@@ -28,15 +90,61 @@
 
     <!-- ================ Order Details List ================= -->
     <div class="details">
-        <div class="recentOrders">
+        <div class="recentOrders" style="overflow: scroll;">
             <div class="cardHeader">
                 <h2>Unclaimed Dispatches</h2>
                 <a href="{% url 'dispatch' %}" class="btn">Dispatch</a>
             </div>
 
-            <table>
+            <table id="data-table" style="overflow: scroll;">
                 <thead>
                     <tr>
+                        <td></td>
+                        <td colspan="2">Sort BY:</td>
+                        <td><div class="center-element">
+                            <span class="custom-select">
+                              <select id="escalation_type">
+                                <option selected>All</option>
+                                <option>Proactive</option>
+                                <option>Reactive</option>
+                                <option>OTB</option>
+                                <option>Support</option>
+                                <option>Optimization</option>
+                              </select>
+                            </span>
+                          </div></td>
+                        <td><div class="center-element">
+                            <span class="custom-select">
+                              <select id="msp">
+                                <option selected>All</option>
+                                <option>Egypro</option>
+                                <option>Camusat</option>
+                                <option>Adrian</option>
+                                <option>Kinde</option>
+                                <option>Fireside</option>
+                                <option>Soliton</option>
+                              </select>
+                            </span>
+                          </div></td>
+                        <td><div class="center-element">
+                            <span class="custom-select">
+                              <select id="fdp">
+                                <option selected>All</option>
+                                <option>Fireside</option>
+                                <option>Broadcom</option>
+                                <option>Optimax</option>
+                                <option>BTN</option>
+                                <option>Com21</option>
+                              </select>
+                            </span>
+                          </div></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Ticket</td>
                         <td>Client Name</td>
                         <td>CI</td>
                         <td>Builing Name</td>
@@ -47,22 +155,33 @@
                         <td>Time Remaining</td>
                         <td>Status</td>
                         <td>Details</td>
+                        <td>Delete</td>
                     </tr>
                 </thead>
 
                 <tbody>
                     {% for dispatch in dispatches %} 
                     <tr>
+                        <td><a href="{{ MEDIA_URL }}{{ dispatch.ticket.name }}" target="_blank" style="color: #1795ce; font-weight: bolder;">{{ dispatch.ticket.name }}</a></td>
                         <td>{{ dispatch.client_name }}</td>
                         <td>{{ dispatch.client_id }}</td>
                         <td>{{ dispatch.building_name }}</td>
-                        <td>{{ dispatch.escalation_type }}</td>
-                        <td>{{ dispatch.msp }}</td>
-                        <td>{{ dispatch.fdp }}</td>
+                        <td class="escalation-type">{{ dispatch.escalation_type }}</td>
+                        <td class="msp">{{ dispatch.msp }}</td>
+                        <td class="fdp">{{ dispatch.fdp }}</td>
                         <td>{{ dispatch.sla_timer }}</td>
                         <td>{{ dispatch.time_remaining_display }}</td>
                         <td><span class="status {{dispatch.status}}">{{ dispatch.status }}</span></td>
                         <td> <a href="{% url 'dispatch-detail' dispatch.pk %}" style="text-decoration: none; color: cyan"> Details </a> </td>
+                        <td>
+                          <form method="post" action="{% url 'delete_dispatch' dispatch.pk %}" style="display:inline;">
+                              {% csrf_token %}
+                            <button tab-index="-1" type="submit" class="reset btn btn-outline-danger" title="Reset/Delete (Esc)" style="color: #FF6347; border-color: #FF6347; background-color: transparent; border-width: 1px; width: 2rem; height: auto; padding: 2px 1px; box-shadow: inset 0px 0px 5px #FF6347; border-radius: 7px;
+" onclick="return confirm('Are you sure you want to delete this dispatch?');">
+                              <i class="material-icons">delete_forever</i>
+                            </button>
+                          </form>
+                      </td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -74,4 +193,34 @@
 <a href="{% url 'presentation' %}">Presentation</a>
 {% block extra_scripts %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script>
+  document.querySelectorAll('#escalation_type, #msp, #fdp').forEach(select => {
+    select.addEventListener('change', filterTable);
+});
+
+function filterTable() {
+    let escalationType = document.getElementById('escalation_type').value;
+    let msp = document.getElementById('msp').value;
+    let fdp = document.getElementById('fdp').value;
+    
+    let rows = document.querySelectorAll('#data-table tbody tr');
+    
+    rows.forEach(row => {
+        let rowEscalationType = row.querySelector('.escalation-type').textContent;
+        let rowMsp = row.querySelector('.msp').textContent;
+        let rowFdp = row.querySelector('.fdp').textContent;
+
+        let escalationTypeMatch = (escalationType === 'All' || rowEscalationType === escalationType);
+        let mspMatch = (msp === 'All' || rowMsp === msp);
+        let fdpMatch = (fdp === 'All' || rowFdp === fdp);
+
+        if (escalationTypeMatch && mspMatch && fdpMatch) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+</script>
+
 {% endblock %}

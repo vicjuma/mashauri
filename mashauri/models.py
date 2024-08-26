@@ -127,8 +127,10 @@ class Dispatch(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     sla_timer = models.DateTimeField(null=True, blank=True)
+    ticketing = models.OneToOneField('Ticket', on_delete=models.SET_NULL, null=True, blank=True, related_name='dispatch')
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     dispatch_image = models.ImageField(null=True, blank=True, upload_to='images/')
+
 
     def __str__(self):
         return f'Dispatch for {self.building_name} (ID: {self.building_id})'
@@ -148,11 +150,12 @@ class Ticket(models.Model):
         ('In Progress', 'In Progress'),
         ('Closed', 'Closed'),
     ]
-    dispatch = models.ForeignKey(Dispatch, on_delete=models.CASCADE)
+    dispatching = models.OneToOneField(Dispatch, on_delete=models.CASCADE)
     assigned_to = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     status = models.CharField(max_length=50, choices=STATUS_CHOICES)
     start_time = models.DateTimeField(auto_now_add=True)
     end_time = models.DateTimeField(null=True, blank=True)
+    name = models.CharField(max_length=50, null=True, blank=True)
 
     def __str__(self):
         return f'Ticket for Dispatch ID: {self.dispatch.id}'

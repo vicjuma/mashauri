@@ -1,34 +1,26 @@
 import io
+import plotly.graph_objs as go
+from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from .models import User, Dispatch, Ticket
-from django.contrib.auth import logout
-from datetime import timedelta, datetime
-from django.http import FileResponse
+from datetime import timedelta
+from django.http import FileResponse, JsonResponse, HttpResponseForbidden
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch
 from reportlab.lib.pagesizes import A6
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
-from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
-import plotly.express as px
-import plotly.graph_objs as go
 from collections import defaultdict
 from functools import wraps
-from django.http import HttpResponseForbidden
-from django.http import HttpResponse
 from django.template.loader import get_template
-from xhtml2pdf import pisa
-import os
-from reportlab.lib.pagesizes import A6
-from reportlab.lib.units import inch
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle
-from reportlab.pdfgen import canvas
 
 def generate_pdf(building_name, building_id, msp, fdp, escalation_type, comments, coordinates, CN, CID, tid):
     buf = io.BytesIO()
@@ -130,7 +122,7 @@ def generate_pdf(building_name, building_id, msp, fdp, escalation_type, comments
     
     doc.build(elements)
     buf.seek(0)
-    return buf
+    return buf, str(tid).zfill(7)
 
 def unauthenticated_user(view_func):
     @wraps(view_func)
@@ -259,7 +251,8 @@ def msp_dashboard(request):
         'dispatches': all_dispatches,
         'total_dispatches': total_dispatches,
         'total_dispatches_all': total_dispatches_all,
-        'breached':  status_counts_all['breached']
+        'breached':  status_counts_all['breached'],
+        'MEDIA_URL': settings.MEDIA_URL,
     }
     return render(request, 'mashauri/sample_dash.html', context)
 
@@ -267,7 +260,8 @@ def msp_dashboard(request):
 # @unauthenticated_user
 def fdp_dashboard(request):
     user = request.user
-    all_dispatches = Dispatch.objects.filter(fdp=user.fdp_category).select_related('user').all()
+    # all_dispatches = Dispatch.objects.filter(fdp=user.fdp_category).select_related('user').all()
+    all_dispatches = Dispatch.objects.filter(msp=user.msp_category).select_related('user', 'ticket').all()
     every_dispatch = Dispatch.objects.all()
     
     status_counts_user = {
@@ -315,7 +309,8 @@ def fdp_dashboard(request):
         'dispatches': all_dispatches,
         'total_dispatches': total_dispatches,
         'total_dispatches_all': total_dispatches_all,
-        'breached':  status_counts_all['breached']
+        'breached':  status_counts_all['breached'],
+        'MEDIA_URL': settings.MEDIA_URL,
     }
     return render(request, 'mashauri/fdp_dashboard.html', context)
 
@@ -372,7 +367,8 @@ def ec_dashboard(request):
         'dispatches': all_dispatches,
         'total_dispatches': total_dispatches,
         'total_dispatches_all': total_dispatches_all,
-        'breached':  status_counts_all['breached']
+        'breached':  status_counts_all['breached'],
+        'MEDIA_URL': settings.MEDIA_URL,
     }
     return render(request, 'mashauri/ec_dashboard.html', context)
 
@@ -429,7 +425,8 @@ def ep_dashboard(request):
         'dispatches': all_dispatches,
         'total_dispatches': total_dispatches,
         'total_dispatches_all': total_dispatches_all,
-        'breached':  status_counts_all['breached']
+        'breached':  status_counts_all['breached'],
+        'MEDIA_URL': settings.MEDIA_URL,
     }
     return render(request, 'mashauri/ep_dashboard.html', context)
 
@@ -486,7 +483,8 @@ def support_dashboard(request):
         'dispatches': all_dispatches,
         'total_dispatches': total_dispatches,
         'total_dispatches_all': total_dispatches_all,
-        'breached':  status_counts_all['breached']
+        'breached':  status_counts_all['breached'],
+        'MEDIA_URL': settings.MEDIA_URL,
     }
     return render(request, 'mashauri/support_dashboard.html', context)
 
@@ -543,7 +541,8 @@ def rp_dashboard(request):
         'dispatches': all_dispatches,
         'total_dispatches': total_dispatches,
         'total_dispatches_all': total_dispatches_all,
-        'breached':  status_counts_all['breached']
+        'breached':  status_counts_all['breached'],
+        'MEDIA_URL': settings.MEDIA_URL,
     }
     return render(request, 'mashauri/rp_dashboard.html', context)
 
@@ -605,14 +604,16 @@ def dispatch(request):
         c.save()
         
         ticket = Ticket.objects.create(
-            dispatch=dispatch,
+            dispatching=dispatch,
             status='Open'
         )
         
-        filename = f"ticket1.pdf"  # Adjust filename as needed
-        pdf_buf = generate_pdf(building_name, building_id, msp, fdp, escalation_type, comments, coordinates, client_name, client_id, ticket.id)
+        pdf_buf, id = generate_pdf(building_name, building_id, msp, fdp, escalation_type, comments, coordinates, client_name, client_id, ticket.id)
+        filename = f"{id}.pdf"  # Adjust filename as needed
         path = default_storage.save(filename, ContentFile(pdf_buf.getvalue()))
-        fileR = FileResponse(pdf_buf, as_attachment=True, filename=f"ticket{1}.pdf")
+        ticket.name = filename
+        ticket.save()
+        fileR = FileResponse(pdf_buf, as_attachment=True, filename=f"{id}.pdf")
         
         return JsonResponse({'status': 'success', 'role': request.user.role}, status=200)
         
@@ -641,10 +642,12 @@ def plots_visualization(request):
         title='Dispatch Growth Over Time',
         xaxis_title='Number of Dispatches',
         yaxis_title='Cumulative Count',
+        width=800,  # Custom width
+        height=600  # Custom height
     )
 
     # Convert the Plotly figure to JSON and pass to the template
-    plot_div = fig.to_html(full_html=False)
+    plot_div = fig.to_html(full_html=False, config={'staticPlot': True})
     
     
     # Fetch all Dispatch objects
@@ -684,6 +687,8 @@ def plots_visualization(request):
         title='Escalations to Each MSP',
         xaxis_title='MSP',
         yaxis_title='Count',
+        width=800,  # Custom width
+        height=600  # Custom height
     )
 
     fig_fdp = go.Figure()
@@ -692,11 +697,13 @@ def plots_visualization(request):
         title='Escalations from Each FDP',
         xaxis_title='FDP',
         yaxis_title='Count',
+        width=800,  # Custom width
+        height=600  # Custom height
     )
 
     # Convert the Plotly figures to JSON and pass to the template
-    plot_div_msp = fig_msp.to_html(full_html=False)
-    plot_div_fdp = fig_fdp.to_html(full_html=False)
+    plot_div_msp = fig_msp.to_html(full_html=False, config={'staticPlot': True})
+    plot_div_fdp = fig_fdp.to_html(full_html=False, config={'staticPlot': True})
     
     
     # Initialize defaultdict to count occurrences of each escalation type
@@ -721,10 +728,12 @@ def plots_visualization(request):
         title='Number of Escalations by Escalation Type',
         xaxis_title='Escalation Type',
         yaxis_title='Count',
+        width=800,  # Custom width
+        height=600  # Custom height
     )
 
     # Convert the Plotly figure to JSON and pass to the template
-    plot_div_esc = fig.to_html(full_html=False)
+    plot_div_esc = fig.to_html(full_html=False, config={'staticPlot': True})
 
     context = {
         'plot_div': plot_div,
@@ -741,6 +750,14 @@ def logout_user(request):
     logout(request)
     return redirect('login')  # Redirect to the login page after logging out
 
+@login_required
+def delete_dispatch(request, pk):
+    dispatch = get_object_or_404(Dispatch, pk=pk)
+    if request.method == 'POST':
+        dispatch.delete()
+        messages.success(request, f'Dispatch for {dispatch.building_name} (ID: {dispatch.building_id}) has been deleted.')
+    return redirect('redirect_to_dashboard')
+    
 @login_required
 def redirect_to_dashboard(request):
     if request.user.role == User.Role.ADMIN:

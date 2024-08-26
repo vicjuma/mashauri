@@ -15,4 +15,5 @@ urlpatterns = [
     path('logout/', views.logout_user, name='logout'),
     path('dashboard/redirect', views.redirect_to_dashboard, name='redirect_to_dashboard'),
     path('pdf/', views.redirect_to_dashboard, name='pdf_gen'),
+    path('dashboard/dispatch/delete/<int:pk>/', views.delete_dispatch, name='delete_dispatch'),
 ]

@@ -8,11 +8,16 @@
 {% block main %}
 {% include '../partials/nav.html' %}
 <h1>Graphical Representation of Mashauri Data</h1>
-<div id="plotly_chart">
-    {{ plot_div|safe }}  <!-- Render the Plotly chart -->
-    {{plot_div_msp|safe}}
-    {{plot_div_fdp|safe}}
-    {{plot_div_esc|safe}}
+<div id="plotly_chart" class="container-fluid">
+    <div class="row">
+        <div class="col"> {{ plot_div|safe }} </div>
+        <div class="col"> {{plot_div_msp|safe}}</div>
+    </div>
+    <div class="row">
+        <div class="col">{{plot_div_fdp|safe}}</div>
+        <div class="col">{{plot_div_esc|safe}}</div>
+    </div>
+    <!-- Render the Plotly chart -->
 </div>
     {% block extra_scripts %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
